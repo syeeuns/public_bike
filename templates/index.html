@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>따릉이 실시간</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"/>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .jumbotron {
+            text-align: center;
+        }
+
+        .search {
+            width: 500px;
+            margin: auto;
+        }
+
+        #search-input {
+            margin-bottom: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('.container').empty();
+        })
+
+        function search() {
+            let name = $('#search-input').val();
+            if (name === '') {
+                alert('검색어를 입력하세요.');
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: `/search`,
+                    data: {'name': name},
+                    success: function (response) {
+                        if (response['result'] === 'success') {
+                            alert(response['msg']);
+                            $('.container').empty();
+                            showResults();
+                        } else {
+                            alert('서버 오류');
+                        }
+                    }
+                })
+            }
+        }
+
+        function showResults() {
+            $.ajax({
+                type: 'GET',
+                url: `/search`,
+                data: {},
+                success: function (response) {
+                    if (response['result'] === 'success') {
+                        let bikes = response['bike'];
+                        let temp_html1 = `
+                        <h4 class="title">검색 결과 : ${bikes.length}개</h4>
+                        <div class="card-box">`;
+
+                        $('.container').append(temp_html1);
+                        for (let i = 0; i < bikes.length; i++) {
+                            let name = bikes[i]['name']
+                            let parking = bikes[i]['parking']
+                            let rack = bikes[i]['rack']
+                            let rate = bikes[i]['rate']
+
+                            let temp_html2 =
+                                `<div class="card">
+                                    <h5 class="card-header">${name}</h5>
+                                    <div class="card-body">
+                                        <h5 class="card-title">주차된 자전거 수 : ${parking}</h5>
+                                        <br>
+                                        <p class="card-text">정류장 거치대 수 : ${rack}</p>
+                                        <p class="card-text">거치율 : ${rate}</p>
+                                    </div>
+                                </div>`;
+                            $('.card-box').append(temp_html2)
+                        }
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div class="jumbotron">
+    <h1 class="title">따릉이<i class="fas fa-bicycle"></i></h1>
+    <p class="subtitle">원하는 정류장의 실시간 따릉이 현황을 알려드려요.</p>
+    <div class="search">
+        <input type="text" class="form-control" id="search-input">
+        <button type="button" class="btn btn-light" onclick="search()">검색</button>
+    </div>
+</div>
+<div class="container">
+    <h4 class="title">검색 결과 : 12개</h4>
+    <div class="card-box">
+        <div class="card">
+            <h5 class="card-header">정류장 명</h5>
+            <div class="card-body">
+                <h5 class="card-title">자전거 수</h5>
+                <br>
+                <p class="card-text">거치대 수</p>
+                <p class="card-text">거치율</p>
+            </div>
+        </div>
+        <div class="card">
+            <h5 class="card-header">Featured</h5>
+            <div class="card-body">
+                <h5 class="card-title">Special title treatment</h5>
+                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+        <div class="card">
+            <h5 class="card-header">Featured</h5>
+            <div class="card-body">
+                <h5 class="card-title">Special title treatment</h5>
+                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
